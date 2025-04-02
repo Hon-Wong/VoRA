@@ -1,11 +1,15 @@
-<p align="center">
-  <h1 align="center">Vision as LoRA</h1>
-</p>
+# Vision as LoRA
 
-<table>
+<div align="center">
+
+[![arXiv](https://img.shields.io/badge/arXiv%20paper-2503.20680-b31b1b.svg)](https://arxiv.org/pdf/2503.20680)
+
+</div>
+
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
   <tr>
-    <td width="45%" valign="top">
-      <img src="assets/framework.gif" alt="Framework" style="width: 100%">
+    <td width="45%" valign="top" style="padding-right: 20px;">
+      <img src="assets/framework.gif" alt="Framework" width="100%">
     </td>
     <td width="55%" valign="top">
       <h3>Abstract</h3>
