@@ -10,7 +10,7 @@
 </p>
 
 <div align="center" style="width: 100%; margin: 0 auto;">
-  <img src="assets/framework.gif" alt="Framework" width="50%">
+  <img src="assets/framework.gif" alt="Framework" width="70%">
 </div>
 
 </div>
