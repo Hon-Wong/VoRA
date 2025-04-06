@@ -18,7 +18,7 @@
 
 ## News
 
-* **2025-04-04:** [VoRA Weights](https://huggingface.co/collections/Hon-Wong/vora-67ee34c9d32e9ac2358106ae) are released. 
+* **2025-04-04:** [VoRA Weights and training data](https://huggingface.co/collections/Hon-Wong/vora-67ee34c9d32e9ac2358106ae) are released. 
 
 <h3 align="center">Abstract</h3>
 
