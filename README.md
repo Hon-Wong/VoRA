@@ -18,6 +18,7 @@
 
 ## News
 
+* **2025-04-16:** Training code released.
 * **2025-04-06:** [LMMs-Eval](https://github.com/EvolvingLMMs-Lab/lmms-eval/pull/616) has supported VoRA. 
 * **2025-04-04:** [VoRA Weights and training data](https://huggingface.co/collections/Hon-Wong/vora-67ee34c9d32e9ac2358106ae) are released. 
 
