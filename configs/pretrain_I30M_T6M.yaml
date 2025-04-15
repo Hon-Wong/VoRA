@@ -1,0 +1,72 @@
+bf16: True
+seed: 42
+num_train_epochs: 1
+per_device_train_batch_size: 8  # 8 GPUs
+per_device_eval_batch_size: 4
+gradient_accumulation_steps: 4  
+evaluation_strategy: "no"
+save_strategy: "steps"
+save_steps: 10000
+learning_rate: 0.0002
+weight_decay: 0.
+warmup_steps: 100
+lr_scheduler_type: "constant_with_warmup"
+logging_steps: 1
+tf32: True
+shuffle: True 
+gradient_checkpointing: true
+dataloader_num_workers: 4
+report_to: wandb
+output_dir: ./output/pretrain_I30M_T6M
+wandb_project: VoRA
+run_name: pretrain_I30M_T6M
+deepspeed: ./configs/deepspeed/zero2.json
+
+model:
+  llm: Qwen/Qwen2.5-7B-Instruct
+  vision_embedding: "AIMv2Embedding"
+  patch_size: 14
+  image_size: 448
+  aux_vision: apple/aimv2-huge-patch14-448
+  reuse_aux_vision_embedding_layers: "preprocessor"
+  lora:
+    layers: 24
+    r: 1024
+    target_modules: [    
+        "self_attn.q_proj",
+        "self_attn.k_proj",
+        "self_attn.v_proj",
+        "self_attn.o_proj",
+        "mlp.up_proj",
+        "mlp.gate_proj",
+        "mlp.down_proj",
+    ]
+
+data:
+  train:
+    data_fetch:
+      data_paths: [
+        {
+          "anno_path": "{data_root}/VoRA-Recap-8M/annotations/VoRA-Recap-8M.json", # modify here
+          "image_folder": "{data_root}/VoRA-Recap-8M" # modify here
+        },
+        {
+          "anno_path": "{data_root}/VoRA-TextQA-Mixed/annotations/VoRA-TextQA-Mixed.json", # modify here
+          "image_folder": ""
+        },
+      ]
+
+    data_preprocess:
+      frames_key: frames
+      label_key: conversations
+      tokenizer: Qwen/Qwen2.5-7B-Instruct
+      max_seq_len: 2048
+      max_prompt_len: 2048
+      vqa_processor_params:
+        system_message: "<|im_start|>system\nYou are a helpful assistant.<|im_end|>"
+        roles: ["\n<|im_start|>user\n", "<|im_end|>\n<|im_start|>assistant\n"]
+      num_segments: 1
+      frames_ops:
+        PILExpand2Square: {}
+        HFImageTransform:
+          path: apple/aimv2-huge-patch14-448

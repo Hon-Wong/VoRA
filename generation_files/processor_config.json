@@ -1,0 +1,6 @@
+{
+  "image_token": "<image>",
+  "image_token_index": -200,
+  "processor_class": "VoRAProcessing",
+  "auto_map": {"AutoProcessor": "processing_vora.VoRAProcesser"}
+}
