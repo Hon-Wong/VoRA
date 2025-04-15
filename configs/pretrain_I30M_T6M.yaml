@@ -47,8 +47,12 @@ data:
     data_fetch:
       data_paths: [
         {
-          "anno_path": "{data_root}/VoRA-Recap-8M/annotations/VoRA-Recap-8M.json", # modify here
-          "image_folder": "{data_root}/VoRA-Recap-8M" # modify here
+          "anno_path": "{data_root}/VoRA-Recap-29M/annotations/VoRA-Recap-29M.json", # modify here
+          "image_folder": "{data_root}/VoRA-Recap-29M" # modify here
+        },
+        {
+          "anno_path": "{data_root}/VoRA-Recap-GLD-1.4M/annotations/VoRA-Recap-GLD-1.4M.json", # modify here
+          "image_folder": "{data_root}/VVoRA-Recap-GLD-1.4M" # modify here
         },
         {
           "anno_path": "{data_root}/VoRA-TextQA-Mixed/annotations/VoRA-TextQA-Mixed.json", # modify here
