@@ -1,6 +1,5 @@
 from models.modeling_vora import VoRAForCausalLM, VoRAConfig
 import os
-from transformers import AutoConfig, AutoTokenizer, Qwen2VLForConditionalGeneration
 import torch
 
 def key_mapping(state_dict, key_mapping_dict):
@@ -112,33 +111,6 @@ def partial_load_from_checkpoints(
         state_dict = new_state_dict
     state_dict = key_mapping(state_dict, ckpt_rename_parameters)
     return state_dict
-
-def is_lora_checkpoint(state_dict):
-    for key in state_dict.keys():
-        if "lora" in key:
-            return True
-    return False
-
-def save_model(origin_pretrained_path, checkpoint_path, save_path):
-
-    print("Loading tokenizer from:", checkpoint_path)
-    tokenizer = AutoTokenizer.from_pretrained(origin_pretrained_path, trust_remote_code=True)
-
-    config_file = os.path.join(origin_pretrained_path, "config.json")
-    config = AutoConfig.from_pretrained(config_file)
-    print("Initalizing model ...")
-    model = Qwen2VLForConditionalGeneration._from_config(config)
-
-    print("Loading weights ...")
-    state_dict = partial_load_from_checkpoints(checkpoint_path, ckpt_rename_parameters={"module.model.model.": "model.", "module.model.visual": "visual", "module.model.lm_head.weight": "lm_head.weight"})
-    print(state_dict.keys())
-    model.load_state_dict(state_dict, strict=True)
-    
-    print(f"Saving model to {save_path}")
-    model.save_pretrained(save_path)
-    tokenizer.save_pretrained(save_path)
-
-    return model, tokenizer
 
 if __name__ == "__main__":
     import argparse
