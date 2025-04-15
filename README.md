@@ -125,7 +125,7 @@ torchrun --nproc_per_node 8 --nnodes 4 --node_rank $NODE_RANK --master_addr $MAS
 Merge LoRA weights into the base model:
 
 ```bash
-python3 tools/config.py --config configs/pretrain_I30M_T6M.yaml --checkpoint {your_checkpoint_dir} --save_dir {your_save_dir}
+python3 tools/merge_lora.py --config=configs/pretrain_I30M_T6M.yaml --checkpoint={your_checkpoint_dir} --save_dir={your_save_dir}
 ```
 
 Then set the model.pretrained in configs/finetune.yaml, and run:
