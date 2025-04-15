@@ -52,25 +52,17 @@ We have collected or generated the following datasets for VoRA. The image bytes 
 datasets for ablation study
 ```bash
 apt-get install git-lfs
-
 git-lfs install
-
 cd {raw_data_dir}
-
 git clone https://huggingface.co/datasets/Hon-Wong/VoRA-Recap-8M
 ```
 datasets for Pre-training
 ```bash
 apt-get install git-lfs
-
 git-lfs install
-
 cd {raw_data_dir}
-
 git clone https://huggingface.co/datasets/Hon-Wong/VoRA-Recap-29M
-
 git clone https://huggingface.co/datasets/Hon-Wong/VoRA-Recap-GLDv2-1.4M
-
 git clone https://huggingface.co/datasets/Hon-Wong/VoRA-TextQA-Mixed
 ```
   
@@ -83,15 +75,13 @@ python3 tools/parquet2json.py --dataset_dir={raw_data_dir}/VoRA-Recap-8M --save_
 For Pre-training:
 ```bash
 python3 tools/parquet2json.py --dataset_dir={raw_data_dir}/VoRA-Recap-29M --save_dir={data_dir}/VoRA-Recap-29M
-
 python3 tools/parquet2json.py --dataset_dir={raw_data_dir}/VoRA-Recap-GLDv2-1.4M --save_dir={data_dir}/VoRA-Recap-GLDv2-1.4M
-
 python3 tools/parquet2json.py --dataset_dir={raw_data_dir}/VoRA-TextQA-Mixed --save_dir={data_dir}/VoRA-TextQA-Mixed
 ```
 
 3. Prepare [LLaVA-mixture](https://huggingface.co/datasets/liuhaotian/LLaVA-Instruct-150K)
 
-convert it to our format:
+convert it to VoRA's format:
 ```json
 {
   "id": "00000000",
@@ -111,7 +101,7 @@ convert it to our format:
 }
 ```
 
-Also, if you are using your own data, you can follow this step to format.
+Also, if you want to your own data, simply follow the step to format.
 
 ## Training
 
@@ -137,6 +127,8 @@ Merge LoRA weights into the base model:
 python3 tools/config.py --config configs/pretrain_I30M_T6M.yaml --checkpoint {your_checkpoint_dir} --save_dir {your_save_dir}
 ```
 
+Then set the model.pretrained in configs/finetune.yaml, and run:
+
 ```bash
 deepspeed --master_port=20000 train/train.py configs/finetune.yaml
 ```
@@ -148,12 +140,8 @@ The original results in the paper were evaluated using a suite similar to LLaVA.
 1. Install LMMs-Eval:
 ```bash
 git clone https://github.com/EvolvingLMMs-Lab/lmms-eval
-
 cd lmms-eval
-
 pip3 install -e .
-
-export HF_TOKEN={your_hf_token}
 ```
 
 2. Evaluate
@@ -161,14 +149,15 @@ export HF_TOKEN={your_hf_token}
 Evaluate the checkpoints in the paper:
 
 ```bash
+export HF_TOKEN={your_hf_token}
 python3 -m accelerate.commands.launch --num_processes=8 --main_process_port=51999 -m lmms_eval --tasks textvqa_val --model vora --model_args pretrained=Hon-Wong/VoRA-7B-Instruct --batch_size 1 --log_samples --output_path ./logs/
 ```
 
 Evaluate your own model:
 
 ```bash
+export HF_TOKEN={your_hf_token}
 cp generation_files/* {your_model_dir}
-
 python3 -m accelerate.commands.launch --num_processes=8 --main_process_port=51999 -m lmms_eval --tasks textvqa_val --model vora --model_args pretrained={your_model_dir} --batch_size 1 --log_samples --output_path ./logs/
 ```
 
