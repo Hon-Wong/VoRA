@@ -7,14 +7,14 @@ from utils.constants import (
 
 
 class VQAProcessor(object):
-    """ VQA text processor, support format: 
+    """ VQA text processor, support format:
 
         [{'from': 'human', 'value': '<image>\nWhat is the girl eating in the image?'}
          {'from': 'gpt', 'value': 'The girl in the image is eating a dessert, which appears to be a graham cracker treat or a cookie sandwich.'}
          {'from': 'human', 'value': "Describe the girl's hair color and clothing."}
          {'from': 'gpt', 'value': 'The girl has blonde hair, and she is wearing a pink shirt.'}]
     """
- 
+
     def __init__(self,
                  key,
                  vision_placeholder='',

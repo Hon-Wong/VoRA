@@ -13,7 +13,7 @@ class GroupRandomSampler(RandomSampler):
         for length in self.lengths:
             self.start_idx.append(self.start_idx[-1] + length)
         self.samplers = [RandomSampler(list(range(length))) for length in lengths]
-    
+
     def __iter__(self):
         for i, sampler in enumerate(self.samplers):
             for idx in sampler:
@@ -23,7 +23,7 @@ class GroupRandomSampler(RandomSampler):
 class GlobalGroupRandomSampler(Sampler):
     """
     Ensure all the data within a global batch are from the same group.
-    For those groups which can not be divided by global_batchsize, we over sample them  
+    For those groups which can not be divided by global_batchsize, we over sample them
     """
     def __init__(self, global_batchsize: int, modality_group_indices: List[List[int]]):
         """

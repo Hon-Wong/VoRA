@@ -34,17 +34,17 @@ class CosineLoss(nn.Module):
         """
         # teacher_tokens shape is (batch_size, height, width, feature_dim)
         teacher_tokens = teacher_tokens.permute(0, 3, 1, 2)  # Convert to (batch_size, feature_dim, height, width)
-        interpolated = F.interpolate(teacher_tokens, size=target_size, mode='bilinear', align_corners=True).flatten(2)  # Flatten height and width dimensions
+        interpolated = torch.nn.functional.interpolate(teacher_tokens, size=target_size, mode='bilinear', align_corners=True).flatten(2)  # Flatten height and width dimensions
         return interpolated.permute(0, 2, 1)  # Convert back to (batch_size, new_height * new_width, feature_dim)
 
-    def forward(self, input: torch.Tensor, target: torch.Tensor, input_shape = None, target_shape = None) -> torch.Tensor:
+    def forward(self, input: torch.Tensor, target: torch.Tensor, input_shape=None, target_shape=None) -> torch.Tensor:
         if input_shape is not None and target_shape is not None:
             input = input.reshape((input.shape[0], ) + input_shape + (-1, ))
             input = self.interpolate_tokens_2d(input, target_shape)
 
         cos_sim = nn.functional.cosine_similarity(input, target, dim=1)
         loss = 1 - cos_sim
-        
+
         if self.reduction == 'mean':
             return loss.mean()
         elif self.reduction == 'sum':
@@ -59,7 +59,7 @@ class AuxVision(nn.Module):
     ):
         super().__init__()
         self.skip_aux_cls = config.skip_aux_cls  # whether to skip the cls token in ViT
-        # ---------------- Setup Aux Model ---------------- 
+        # ---------------- Setup Aux Model ----------------
         if 'clip' in config.aux_vision.lower():
             self.aux_model = CLIPVisionModel.from_pretrained(config.aux_vision)
             vision_hidden_size = self.aux_model.vision_model.config.hidden_size
@@ -72,7 +72,7 @@ class AuxVision(nn.Module):
             param.requires_grad = False
         # -------------------------------------------------
 
-        # ---------------- Setup Aux Heads ---------------- 
+        # ---------------- Setup Aux Heads ----------------
         self.aux_layers = list(range(num_hidden_layers))
         for layer_id in self.aux_layers:
             self.add_module(f"aux_layer_{layer_id}", self.build_aux_layer(config.hidden_size, vision_hidden_size))
@@ -94,7 +94,7 @@ class AuxVision(nn.Module):
     def forward(self, frames, llm_hidden_states, vision_mask):
         vision_hidden_states = self.aux_model(frames, output_hidden_states=True).hidden_states
         losses = {}
-        for layer_idx in self.aux_layers:  
+        for layer_idx in self.aux_layers:
             aux_hidden_states = getattr(self, f"aux_layer_{layer_idx}")(llm_hidden_states[layer_idx][vision_mask == 1])
             start_id = 1 if self.skip_aux_cls else 0
             aux_loss = self.loss_function(vision_hidden_states[layer_idx][:, start_id:].reshape(aux_hidden_states.shape), aux_hidden_states)

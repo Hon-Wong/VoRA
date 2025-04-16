@@ -51,16 +51,16 @@ class VoRADataset(Dataset):
 
     def __len__(self):
         return len(self.anns)
-    
+
     @property
     def datasets_length(self):
         return self._datasets_length
-    
+
     @property
     def modality_group_indices(self):
         return self._modality_group_indices
-    
-    def __getitem__(self, idx):  
+
+    def __getitem__(self, idx):
         item = copy.deepcopy(self.anns[idx])
         output = self.processor.transform(item)
         if output is None:

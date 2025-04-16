@@ -1,10 +1,11 @@
 import math
-from typing import List, Tuple, Union
 import sys
-from PIL import Image
+from typing import List, Tuple, Union
+
 import numpy as np
-from torchvision.transforms import Compose
 import torchvision.transforms as T
+from PIL import Image
+from torchvision.transforms import Compose
 from transformers import AutoImageProcessor
 
 
@@ -96,7 +97,7 @@ class ResizeWithAspectRatio:
 
 
 def smart_resize(
-    height: int, width: int, factor: int = 14, min_pixels: int = 56 * 56, max_pixels: int = 14 * 14 * 50 * 80 
+    height: int, width: int, factor: int = 14, min_pixels: int = 56 * 56, max_pixels: int = 14 * 14 * 50 * 80
 ):
     """Rescales the image so that the following conditions are met:
 
@@ -133,7 +134,7 @@ class PILSmartResize:
         merge_size: int = 1,
         min_pixels: int = 56 * 56,
         max_pixels: int = 14 * 14 * 50 * 80,
-        resampling: int = Image.Resampling.BICUBIC,  
+        resampling: int = Image.Resampling.BICUBIC,
     ):
         self.patch_size = patch_size
         self.merge_size = merge_size

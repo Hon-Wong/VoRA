@@ -21,7 +21,6 @@ from utils.constants import (
     DATA_TYPE_TEXT,
     DATA_TYPE_VIDEO,
     DEFAULT_IMAGE_TOKEN,
-    DEFAULT_VIDEO_TOKEN,
     IGNORE_INDEX,
     IMAGE_TOKEN_INDEX,
 )
@@ -70,7 +69,7 @@ class VoRAProcessor(object):
                  max_seq_len: int = 512,
                  max_prompt_len: int = 512,
                  sample_method: str = "global_random",
-                 dummy_frame_shape = (0, 3, 448, 448),
+                 dummy_frame_shape: tuple = (0, 3, 448, 448),
                  max_batch_frames: int = 16,
                  num_segments: int = 8,
                  training: bool = True,
@@ -157,14 +156,14 @@ class VoRAProcessor(object):
             data_dict[self.frames_key] = torch.zeros(self.dummy_frame_shape)
             data_dict["n_frames"] = 0
             data_dict["data_type"] = DATA_TYPE_TEXT
-        
+
         if self.label_key not in data_dict:
             logger.error(f"label_key {self.label_key} not in data_dict")
             raise ValueError(f"label_key {self.label_key} not in data_dict")
         else:
             if isinstance(data_dict[self.label_key][0], list):
                 data_dict[self.label_key] = data_dict[self.label_key][0]
-        
+
         data_dict["has_frame"] = has_frame
         return data_dict
 
@@ -206,7 +205,7 @@ class VoRAProcessor(object):
         except Exception as e:
             logger.warning(f"Collaped data!!! {e}")
             return None
-    
+
     def batch_process(self, data_dict):
         keys = list(data_dict.keys())
         bs = len(data_dict[keys[0]])
@@ -271,7 +270,7 @@ class VoRAProcessor(object):
             label_mask += [0] * len(prompt_id) + [1] * len(response_id)
             input_ids = input_ids + [self.eos_id]
             label_mask = label_mask + [1]
-        
+
         input_mask = [1] * len(input_ids)
         prompt = " ".join(prompt_list)
         response = " ".join(response_list)
@@ -326,7 +325,7 @@ class VoRAProcessor(object):
                         aux_ret = aux_video_processor([np.asarray(frame.convert(
                             'RGB')) for frame in frames], return_tensors="pt").data["pixel_values"]
                     else:
-                        raise NotImplementedError("invalid aux_video_processor") 
+                        raise NotImplementedError("invalid aux_video_processor")
                     ret_dict[aux_frame_key] = aux_ret
             return ret_dict
         return {self.frames_key: frames}
@@ -357,7 +356,7 @@ class VoRAProcessor(object):
             collate_data["frames"] = torch.cat(frames_list, dim=0)
         else:
             collate_data["frames"] = frames_list
-        if self.enable_aux_frames:  
+        if self.enable_aux_frames:
             for aux_frame_key in self.aux_frame_keys:
                 if aux_frame_key in aux_frames_dict_of_list:
                     collate_data[aux_frame_key] = torch.cat(aux_frames_dict_of_list[aux_frame_key], dim=0)

@@ -9,7 +9,7 @@ from transformers import (
 
 from .attention_mask import make_mask
 from .configuration_vora import VoRAConfig
-from .vision_embedding import * # hacking, let transformers find vision_embedding
+from .vision_embedding import *  # hacking, let transformers find vision_embedding
 from . import vision_embedding as VB
 from .lora import apply_lora
 from .vora_generation_utils import (
@@ -22,11 +22,12 @@ try:
 except:
     from transformers.utils import logging
 
+
 logger = logging.get_logger(__name__)
 
 
-class VoRAForCausalLM(PreTrainedModel):   
-    config_class = VoRAConfig 
+class VoRAForCausalLM(PreTrainedModel):
+    config_class = VoRAConfig
     _auto_class = 'AutoModelForCausalLM'
     supports_gradient_checkpointing = True
     supports_report_metrics: bool = True
@@ -42,7 +43,7 @@ class VoRAForCausalLM(PreTrainedModel):
 
         self.config.update(self.llm.config.to_dict())
 
-         # -------------- Setup LoRA -------------------
+        # -------------- Setup LoRA -------------------
         if config.lora:
             for _, param in self.llm.named_parameters():
                 param.requires_grad = False
@@ -50,7 +51,7 @@ class VoRAForCausalLM(PreTrainedModel):
         # ----------------------------------------------
 
         # ------------ Setup Vision Embedding ----------
-        self.vision_embedding = getattr(VB, config.vision_embedding)(self.config)  # setup after llm so that we know the hiddensize   
+        self.vision_embedding = getattr(VB, config.vision_embedding)(self.config)  # setup after llm so that we know the hiddensize
         # ----------------------------------------------
 
         # ------------- Setup Aux Vision ---------------
@@ -209,9 +210,9 @@ class VoRAForCausalLM(PreTrainedModel):
             targets = torch.stack(targets, dim=0)
 
         attention_mask = make_mask(
-            attention_mask, 
-            mode=self.config.vision_attention_mask, 
-            vision_mask=vision_mask, 
+            attention_mask,
+            mode=self.config.vision_attention_mask,
+            vision_mask=vision_mask,
             dtype=inputs_embeds.dtype
         )
 
@@ -261,7 +262,7 @@ class VoRAForCausalLM(PreTrainedModel):
         self.report_metrics(**metrics)
 
         return outputs
-        
+
     def generate(self, batch, **generate_params):
 
         with torch.amp.autocast(
@@ -277,7 +278,6 @@ class VoRAForCausalLM(PreTrainedModel):
 
             inputs_embeds, attention_mask, _, _ = self._concat_embedding(
                 vision_encode_out, batch, vision_placeholder_index, left_padding=False)
-
 
         outputs = self.llm.generate(
             inputs_embeds=inputs_embeds,

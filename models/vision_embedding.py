@@ -39,7 +39,7 @@ class AIMv2PatchEmbed(nn.Module):
 
 
 class AIMv2Embedding(nn.Module):
-    def __init__(self,         
+    def __init__(self,
         config: VoRAConfig = None,
     ):
         super().__init__()
@@ -63,7 +63,7 @@ class AIMv2Embedding(nn.Module):
             tokens = tokens + pos_embed[:, :N]
         else:
             pos_embed = pos_embed.view(1, int(pos_embed.size(1)**0.5), int(pos_embed.size(1)**0.5), -1).permute(0, 3, 1, 2)
-            pos_embed = F.interpolate(pos_embed, size=(h_token, w_token), mode='bilinear', align_corners=False).permute(0, 2, 3, 1)
+            pos_embed = nn.functional.interpolate(pos_embed, size=(h_token, w_token), mode='bilinear', align_corners=False).permute(0, 2, 3, 1)
             pos_embed = pos_embed.view(1, N, pos_embed.size(-1))
             tokens = tokens + pos_embed
 
