@@ -1,5 +1,10 @@
 import copy
 
+from utils.constants import (
+    DEFAULT_IMAGE_TOKEN,
+    DEFAULT_VIDEO_TOKEN,
+)
+
 
 class VQAProcessor(object):
     """ VQA text processor, support format: 
@@ -25,6 +30,40 @@ class VQAProcessor(object):
         self.system_start = system_start
         self.system_end = system_end
 
+    def add_vision_placeholders_in_prompt(self, question, data_dict):
+        """ For mixture training with video/image datasets, we refine media tokens in prompt.
+            - in image mode: replace <video> with [Frame i: <image>] * n_frames
+            - in video mode: replace <image> with <video> directly
+        """
+        def _add_timestamp(frame_count, frame_prefix_pattern="{i}s: ", offset=1, sep="; ", end_symbol="\n"):
+            if frame_count == 1:
+                return DEFAULT_IMAGE_TOKEN
+            image_mode_prompt = ""
+            for i in range(frame_count):
+                if "{i}" in frame_prefix_pattern:
+                    frame_prefix = frame_prefix_pattern.format(i=i+offset)
+                else:
+                    frame_prefix = frame_prefix_pattern
+                image_mode_prompt += frame_prefix + DEFAULT_IMAGE_TOKEN + sep
+            return image_mode_prompt + end_symbol
+
+        # in image mode, replace <video> with [Frame i: <image>] * n_frames
+
+        image_mode_prompt = _add_timestamp(data_dict['n_frames'])
+        vision_token_exist = False
+
+        if DEFAULT_VIDEO_TOKEN in question:
+            vision_token_exist = True
+            question = question.replace(
+                DEFAULT_VIDEO_TOKEN, image_mode_prompt)
+        elif DEFAULT_IMAGE_TOKEN in question:
+            vision_token_exist = True
+
+        if not vision_token_exist:
+            # add vision token to the beginning of the prompt
+            question = image_mode_prompt + question
+        return question
+
     def __call__(self, data_dict):
         messages = copy.deepcopy(data_dict.get(self.key, []))
 
@@ -39,10 +78,13 @@ class VQAProcessor(object):
         system_message = self.system_start + system_message + self.system_end
 
         for i in range(0, len(messages), 2):
-            question = self.roles[0] + messages[i]["value"] + self.roles[1]
-
+            question = messages[i]["value"]
             if i == 0:
-                question = system_message + question
+                if data_dict.get('has_frame', False):
+                    question = self.add_vision_placeholders_in_prompt(question, data_dict)
+                question = system_message + self.roles[0] + question + self.roles[1]
+            else:
+                question = self.roles[0] + question + self.roles[1]
 
             answer = messages[i + 1]["value"]
             q_str_list.append(question)

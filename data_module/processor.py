@@ -165,8 +165,6 @@ class VoRAProcessor(object):
             if isinstance(data_dict[self.label_key][0], list):
                 data_dict[self.label_key] = data_dict[self.label_key][0]
         
-        if has_frame and self.frames_key in data_dict:
-            self.add_vision_placeholders_in_prompt(data_dict)
         data_dict["has_frame"] = has_frame
         return data_dict
 
@@ -187,40 +185,6 @@ class VoRAProcessor(object):
             raise NotImplementedError(f"sample method {self.sample_method} not implemented")
         data_dict[self.frames_key] = part_frames
         return
-
-    def add_vision_placeholders_in_prompt(self, data_dict):
-        """ For mixture training with video/image datasets, we refine media tokens in prompt.
-            - in image mode: replace <video> with [Frame i: <image>] * n_frames
-            - in video mode: replace <image> with <video> directly
-        """
-        def _add_timestamp(frame_count, frame_prefix_pattern="{i}s: ", offset=1, sep="; ", end_symbol="\n"):
-            if frame_count == 1:
-                return DEFAULT_IMAGE_TOKEN
-            image_mode_prompt = ""
-            for i in range(frame_count):
-                if "{i}" in frame_prefix_pattern:
-                    frame_prefix = frame_prefix_pattern.format(i=i+offset)
-                else:
-                    frame_prefix = frame_prefix_pattern
-                image_mode_prompt += frame_prefix + DEFAULT_IMAGE_TOKEN + sep
-            return image_mode_prompt + end_symbol
-
-        # in image mode, replace <video> with [Frame i: <image>] * n_frames
-        if self.label_key in data_dict:
-            image_mode_prompt = _add_timestamp(len(data_dict[self.frames_key]))
-            vision_token_exist = False
-            for item in data_dict[self.label_key]:
-                if DEFAULT_VIDEO_TOKEN in item["value"]:
-                    vision_token_exist = True
-                    item["value"] = item["value"].replace(
-                        DEFAULT_VIDEO_TOKEN, image_mode_prompt)
-                elif DEFAULT_IMAGE_TOKEN in item["value"]:
-                    vision_token_exist = True
-                    break
-            if not vision_token_exist:
-                # add vision token to the beginning of the prompt
-                data_dict[self.label_key][0]["value"] = image_mode_prompt \
-                    + data_dict[self.label_key][0]["value"]
 
     def transform(self, data_dict):
         try:
