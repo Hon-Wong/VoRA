@@ -1,18 +1,12 @@
-import cv2
-import os
 import io
 import json
-import base64
-import math
-import numpy as np
-from PIL import Image
-import os.path as osp
-import pyarrow.parquet as pq
-from tqdm import tqdm
+import os
 import os.path as osp
 from multiprocessing import Pool
-import re
-import subprocess
+
+import pyarrow.parquet as pq
+from PIL import Image
+
 
 def process_row(row):
     # Save frames as JPEG images
@@ -31,9 +25,10 @@ def process_row(row):
     except Exception as e:
         print(e)
         return None
-    
+
     row['frames'] = [image_rela_path]
     return row
+
 
 def process_parquet_file(parquet_path):
     print(f"Processing {os.path.basename(parquet_path)}")
@@ -41,7 +36,6 @@ def process_parquet_file(parquet_path):
     print(f"{os.path.basename(parquet_path)} loaded!")
 
     df = table.to_pandas()
-    num_rows = len(df)
     lines = [l[-1] for l in df.iterrows()]
     print(f"{os.path.basename(parquet_path)} loaded into mem!")
     with Pool(256) as pool:
@@ -53,6 +47,7 @@ def process_parquet_file(parquet_path):
         f.write(json.dumps(row.to_dict()) + '\n')
 
     print(f"{parquet_path} saved!")
+
 
 if __name__ == "__main__":
     import argparse

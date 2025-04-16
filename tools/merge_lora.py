@@ -1,6 +1,13 @@
-from models.modeling_vora import VoRAForCausalLM, VoRAConfig
 import os
+
 import torch
+
+from models.modeling_vora import VoRAForCausalLM, VoRAConfig
+from utils import logging
+
+
+logger = logging.get_logger(__name__)
+
 
 def key_mapping(state_dict, key_mapping_dict):
     new_state_dict = dict()
@@ -14,6 +21,7 @@ def key_mapping(state_dict, key_mapping_dict):
         if flag == 0:
             new_state_dict[k] = v
     return new_state_dict
+
 
 def merge_lora(checkpoint, lora_key="lora_A"):
     new_state_dict = {}
@@ -56,11 +64,12 @@ def merge_lora(checkpoint, lora_key="lora_A"):
         if key not in lora_processed:
             new_state_dict[key] = value
 
-    return new_state_dict     
+    return new_state_dict
+
 
 def partial_load_from_checkpoints(
-        local_checkpoint_path, 
-        ckpt_rename_parameters=None, 
+        local_checkpoint_path,
+        ckpt_rename_parameters=None,
         map_location="cpu",
         model=None,
         valid_prefix=None,
@@ -111,6 +120,7 @@ def partial_load_from_checkpoints(
         state_dict = new_state_dict
     state_dict = key_mapping(state_dict, ckpt_rename_parameters)
     return state_dict
+
 
 if __name__ == "__main__":
     import argparse

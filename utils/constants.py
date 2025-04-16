@@ -1,4 +1,4 @@
-## Special token and index
+# ## Special token and index
 # image level
 IMAGE_TOKEN_INDEX = -200
 DEFAULT_IMAGE_TOKEN = "<image>"
@@ -12,10 +12,10 @@ ONE_PLACEHOLDER_PER_VIDEO = 1
 # ## tokenizer
 IGNORE_INDEX = -100
 
-## log
+# ## log
 DEFAULT_RUNNING_LOG = './logs.txt'
 
-## dataset
+# ## dataset
 FILEEXT2TYPE = {
     "arrow": "arrow",
     "csv": "csv",

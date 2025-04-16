@@ -8,11 +8,10 @@ from easydict import EasyDict as edict
 import torch
 
 from torch import nn
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import DataLoader
 import transformers
-from transformers import Trainer, TrainerState
-from transformers.trainer import is_datasets_available, TRAINER_STATE_NAME
-from transformers.trainer_utils import get_last_checkpoint
+from transformers import Trainer
+from transformers.trainer import is_datasets_available
 
 from data_module.dataset import get_dataset
 from data_module.processor import VoRAProcessor
@@ -72,7 +71,7 @@ class VoRATrainer(Trainer):
             **kwargs,
         )
 
-    def log(self, logs: Dict[str, float], start_time: Optional[float]=None) -> None:
+    def log(self, logs: Dict[str, float], start_time: Optional[float] = None) -> None:
         # Copied from transformers 4.47.0
         if self.state.epoch is not None:
             logs["epoch"] = self.state.epoch
@@ -172,7 +171,7 @@ if __name__ == "__main__":
 
     if not isinstance(df_config.data_paths, list):
         df_config.data_paths = [df_config.data_paths]
-    
+
     train_dataset = get_dataset(
         data_paths=df_config.data_paths,
         processor=processor,

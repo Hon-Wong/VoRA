@@ -67,7 +67,9 @@ data:
       max_seq_len: 2048
       max_prompt_len: 2048
       vqa_processor_params:
-        system_message: "<|im_start|>system\nYou are a helpful assistant.<|im_end|>"
+        system_start: "<|im_start|>system\n"
+        system_end: "<|im_end|>"
+        system_message: "You are a helpful assistant."
         roles: ["\n<|im_start|>user\n", "<|im_end|>\n<|im_start|>assistant\n"]
       num_segments: 1
       frames_ops:

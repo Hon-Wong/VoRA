@@ -15,7 +15,7 @@ class VoRAConfig(PretrainedConfig):
         aux_vision: str = "",
         skip_aux_cls: bool = False,
         reuse_aux_vision_embedding_layers: str = "",
-        lora: dict = {}, 
+        lora: dict = {},
         image_size: int = 448,
         vision_embedding: str = "AIMv2",
         vision_embedding_intermediate_size: int = 1536,
@@ -36,4 +36,3 @@ class VoRAConfig(PretrainedConfig):
         self.patch_size = patch_size
         self.vision_attention_mask = vision_attention_mask
         self.rms_norm_eps = rms_norm_eps
-    
