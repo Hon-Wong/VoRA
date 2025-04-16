@@ -102,7 +102,7 @@ convert it to VoRA's format:
 }
 ```
 
-Also, if you want to your own data, simply follow the step to format.
+Also, if you want to use your own data, simply follow the step to format.
 
 ## Training
 
