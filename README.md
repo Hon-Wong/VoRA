@@ -96,7 +96,7 @@ convert it to VoRA's format:
       },
       {
           "from": "gpt",
-          "value": "This image is a ..."
+          "value": "<image>\nThis image is a ..."
       }
   ]
 }
